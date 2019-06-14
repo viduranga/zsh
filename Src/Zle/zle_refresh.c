@@ -1133,7 +1133,13 @@ zrefresh(void)
 	zsetterm();
 #ifdef TIOCGWINSZ
 	if (winchanged) {
-	    moveto(0, 0);
+            if (tccan(TCRESTRCURSOR)) {
+                tcout(TCRESTRCURSOR);
+                zputc(&zr_cr);
+                vln = vcs = 0;
+            } else {
+                moveto(0, 0);
+            }
 	    t0 = olnct;		/* this is to clear extra lines even when */
 	    winchanged = 0;	/* the terminal cannot TCCLEAREOD	  */
 	    listshown = 0;
@@ -1164,6 +1170,7 @@ zrefresh(void)
         if (termflags & TERM_SHORT)
             vcs = 0;
 	else if (!clearflag && lpromptbuf[0]) {
+            if (tccan(TCSAVECURSOR)) tcout(TCSAVECURSOR);
             zputs(lpromptbuf, shout);
 	    if (lpromptwof == winw)
 		zputs("\n", shout);	/* works with both hasam and !hasam */
