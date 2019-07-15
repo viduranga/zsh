@@ -1133,13 +1133,7 @@ zrefresh(void)
 	zsetterm();
 #ifdef TIOCGWINSZ
 	if (winchanged) {
-            if (tccan(TCRESTRCURSOR)) {
-                tcout(TCRESTRCURSOR);
-                zputc(&zr_cr);
-                vln = vcs = 0;
-            } else {
-                moveto(0, 0);
-            }
+	    moveto(0, 0);
 	    t0 = olnct;		/* this is to clear extra lines even when */
 	    winchanged = 0;	/* the terminal cannot TCCLEAREOD	  */
 	    listshown = 0;
@@ -1170,7 +1164,6 @@ zrefresh(void)
         if (termflags & TERM_SHORT)
             vcs = 0;
 	else if (!clearflag && lpromptbuf[0]) {
-            if (tccan(TCSAVECURSOR)) tcout(TCSAVECURSOR);
             zputs(lpromptbuf, shout);
 	    if (lpromptwof == winw)
 		zputs("\n", shout);	/* works with both hasam and !hasam */
@@ -1743,6 +1736,11 @@ individually */
     }
     clearf = 0;
     oput_rpmpt = put_rpmpt;
+
+    if (tccan(TCSAVECURSOR) && tccan(TCRESTRCURSOR)) {
+	moveto(1 - lprompth, 0);
+	tcout(TCSAVECURSOR);
+    }
 
 /* move to the new cursor position */
     moveto(rpms.nvln, rpms.nvcs);
@@ -2440,9 +2438,15 @@ clearscreen(UNUSED(char **args))
 mod_export int
 redisplay(UNUSED(char **args))
 {
-    moveto(0, 0);
-    zputc(&zr_cr);		/* extra care */
-    tc_upcurs(lprompth - 1);
+    if (tccan(TCSAVECURSOR) && tccan(TCRESTRCURSOR)) {
+	tcout(TCRESTRCURSOR);
+	zputc(&zr_cr);
+	vln = vcs = 0;
+    } else {
+	moveto(0, 0);
+	zputc(&zr_cr);		/* extra care */
+	tc_upcurs(lprompth - 1);
+    }
     resetneeded = 1;
     clearflag = 0;
     return 0;
