@@ -2171,7 +2171,7 @@ typeset_single(char *cname, char *pname, Param pm, UNUSED(int func),
 	    !ASG_VALUEP(asg))
 	    on |= PM_UNSET;
 	else if (usepm && (pm->node.flags & PM_READONLY) &&
-		 !(on & PM_READONLY)) {
+		 !(on & PM_READONLY) && func != BIN_EXPORT) {
 	    zerr("read-only variable: %s", pm->node.nam);
 	    return NULL;
 	}
@@ -3029,7 +3029,7 @@ eval_autoload(Shfunc shf, char *name, Options ops, int func)
     }
     if (OPT_MINUS(ops,'X')) {
 	char *fargv[3];
-	fargv[0] = name;
+	fargv[0] = quotestring(name, QT_SINGLE_OPTIONAL);
 	fargv[1] = "\"$@\"";
 	fargv[2] = 0;
 	shf->funcdef = mkautofn(shf);
@@ -5511,14 +5511,12 @@ bin_getopts(UNUSED(char *name), char **argv, UNUSED(Options ops), UNUSED(int fun
     /* check for legality */
     if(opch == ':' || !(p = memchr(optstr, opch, lenoptstr))) {
 	p = "?";
-    err:
 	zsfree(zoptarg);
 	setsparam(var, ztrdup(p));
 	if(quiet) {
 	    zoptarg = metafy(optbuf, lenoptbuf, META_DUP);
 	} else {
-	    zwarn(*p == '?' ? "bad option: %c%c" :
-		  "argument expected after %c%c option",
+	    zwarn("bad option: %c%c",
 		  "?-+"[lenoptbuf], opch);
 	    zoptarg=ztrdup("");
 	}
@@ -5529,8 +5527,17 @@ bin_getopts(UNUSED(char *name), char **argv, UNUSED(Options ops), UNUSED(int fun
     if(p[1] == ':') {
 	if(optcind == lenstr) {
 	    if(!args[zoptind]) {
-		p = ":";
-		goto err;
+		zsfree(zoptarg);
+		if(quiet) {
+		    setsparam(var, ztrdup(":"));
+		    zoptarg = metafy(optbuf, lenoptbuf, META_DUP);
+		} else {
+		    setsparam(var, ztrdup("?"));
+		    zoptarg = ztrdup("");
+		    zwarn("argument expected after %c%c option",
+			  "?-+"[lenoptbuf], opch);
+		}
+		return 0;
 	    }
 	    p = ztrdup(args[zoptind++]);
 	} else

@@ -1,3 +1,75 @@
+2019-07-15  Peter Stephenson  <p.stephenson@samsung.com>
+
+	* 44509: Src/params.c: Prevent crash with modified PATH / path
+	combination in function.
+
+2019-07-10  Peter Stephenson  <p.stephenson@samsung.com>
+
+	* 44505: Functions/Chpwd/zsh_directory_name_generic: Longest
+	prefix matching was broken if there were suffixes indicating
+	further handling.
+
+2019-07-09  Peter Stephenson  <p.stephenson@samsung.com>
+
+	* unposted: Etc/FAQ.yo: typo. also updates to outdated notes on
+	multibyte support.
+
+2019-07-08  Bart Schaefer  <schaefer@brasslantern.com>
+
+	* 43755: Functions/Zle/smart-insert-last-word: (Belated commit)
+	Fix state management for repeat uses to avoid clobbering command
+	line when NOT a repeat
+
+	* 44502: Src/builtin.c: Quote function name for "autoload -X"
+
+	* 44495: Doc/Zsh/params.yo: Mention coproc under $!
+
+2019-07-08  Peter Stephenson  <p.stephenson@samsung.com>
+
+	* users/24030: Etc/FAQ.yo: Note that *.{bla,hbl,ahb} is an
+	expansion, not a pattern match, and what to do instead.
+
+2019-07-02  Peter Stephenson  <p.stephenson@samsung.com>
+
+	* 44480: Doc/Zsh/mod_socket.yo, Doc/Zsh/mod_system.yo,
+	Doc/Zsh/redirect.yo, Src/Modules/system.c, Src/exec.c:
+	Don't automatically close FDT_EXTERNAL file descriptors.
+	All sysopen-created fd's become FDT_EXTERNAL.  =(...)
+	calls closem() consistent with other substitutions.
+
+2019-07-01  Peter Stephenson  <p.stephenson@samsung.com>
+
+	* Martijn: 44469: Src/builtin.c, Test/B10getopts.ztst: correct
+	error on missing option argument.
+
+2019-06-24  Peter Stephenson  <p.w.stephenson@ntlworld.com>
+
+	* 44446: Src/parse.c, Test/A04redirect.ztst: fix here document
+	with file descriptor declarator.
+
+2019-06-23  Peter Stephenson  <p.w.stephenson@ntlworld.com>
+
+	* Martijn: 44443: Src/builtin.c: POSIX allows exporting readonly
+	variables.
+
+2019-06-20  Peter Stephenson  <p.stephenson@samsung.com>
+
+	* 44435: Doc/Zsh/expn.yo, NEWS, README, Src/Zle/compctl.c,
+	Src/glob.c, Src/hist.c, Src/subst.c, Test/D02glob.ztst,
+	Test/D04parameter.ztst, Test/W01history.ztst: Handle
+	trailing digit arguments of :t and :h modifiers.
+
+2019-06-19  Peter Stephenson  <p.stephenson@samsung.com>
+
+	* Roman Perepelitsa: 44430: Src/prompt.c: various problems with
+	countprompt() including wide characters, split tabs and trailing
+	Meta characters.
+
+2019-06-10  Peter Stephenson  <p.stephenson@samsung.com>
+
+	* Eitan Adler: 44409: config.guess, config.sub: update to
+	2019-05-28.
+
 2019-06-06  Peter Stephenson  <p.w.stephenson@ntlworld.com>
 
 	* Stephane (44387, edited): Doc/Zsh/restricted.yo: Describe some
