@@ -1799,6 +1799,11 @@ mod_export int resetneeded;
 mod_export int winchanged;
 #endif
 
+/* whether prompt start position was saved  */
+
+/**/
+mod_export int cursorsaved;
+
 static int
 adjustlines(int signalled)
 {
@@ -1900,8 +1905,11 @@ adjustwinsize(int from)
 	 * The commented "else return;" above might be a safe shortcut,   *
 	 * but I'm concerned about what happens on race conditions; e.g., *
 	 * suppose the user resizes his xterm during `eval $(resize)'?    */
-	if (adjustlines(from) && zgetenv("LINES"))
-	    setiparam("LINES", zterm_lines);
+	if (adjustlines(from)) {
+	    if (zgetenv("LINES"))
+		setiparam("LINES", zterm_lines);
+	    cursorsaved = 0;
+        }
 	if (adjustcolumns(from) && zgetenv("COLUMNS"))
 	    setiparam("COLUMNS", zterm_columns);
 	getwinsz = 1;
@@ -1925,11 +1933,22 @@ adjustwinsize(int from)
 
     if (zleactive && resetzle) {
 #ifdef TIOCGWINSZ
-	winchanged =
-#endif /* TIOCGWINSZ */
-	    resetneeded = 1;
+	if (winchanged) {
+	    winchanged = 2;
+	} else {
+	    do {
+		winchanged = resetneeded = 1;
+		zleentry(ZLE_CMD_RESET_PROMPT);
+		if (winchanged == 1)
+		    zleentry(ZLE_CMD_REFRESH);
+	    } while (winchanged != 1);
+	    winchanged = 0;
+	}
+#else
+	resetneeded = 1;
 	zleentry(ZLE_CMD_RESET_PROMPT);
 	zleentry(ZLE_CMD_REFRESH);
+#endif /* TIOCGWINSZ */
     }
 }
 
