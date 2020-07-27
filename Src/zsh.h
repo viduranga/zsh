@@ -1182,6 +1182,8 @@ typedef void (*PrintTableStats) _((HashTable));
 
 /* hash table for standard open hashing */
 
+typedef struct scanstatus *ScanStatus;
+
 struct hashtable {
     /* HASHTABLE DATA */
     int hsize;			/* size of nodes[]  (number of hash values)   */
@@ -1205,9 +1207,15 @@ struct hashtable {
     ScanFunc printnode;		/* pointer to function to print a node        */
     ScanTabFunc scantab;	/* pointer to function to scan table          */
 
-#ifdef HASHTABLE_INTERNAL_MEMBERS
-    HASHTABLE_INTERNAL_MEMBERS	/* internal use in hashtable.c                */
-#endif
+    /* HASHTABLE INTERNAL MEMBERS */
+    ScanStatus scan;		/* status of a scan over this hashtable       */
+
+#ifdef ZSH_HASH_DEBUG
+    /* Members of struct hashtable used for debugging hash tables           */ \
+    HashTable next, last;	/* linked list of all hash tables           */ \
+    char *tablename;		/* string containing name of the hash table */ \
+    PrintTableStats printinfo;	/* pointer to function to print table stats */
+#endif /* !ZSH_HASH_DEBUG */
 };
 
 /* generic hash table node */

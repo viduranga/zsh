@@ -28,23 +28,6 @@
  */
 
 #include "../config.h"
-
-#ifdef ZSH_HASH_DEBUG
-# define HASHTABLE_DEBUG_MEMBERS \
-    /* Members of struct hashtable used for debugging hash tables */ \
-    HashTable next, last;	/* linked list of all hash tables           */ \
-    char *tablename;		/* string containing name of the hash table */ \
-    PrintTableStats printinfo;	/* pointer to function to print table stats */
-#else /* !ZSH_HASH_DEBUG */
-# define HASHTABLE_DEBUG_MEMBERS
-#endif /* !ZSH_HASH_DEBUG */
-
-#define HASHTABLE_INTERNAL_MEMBERS \
-    ScanStatus scan;		/* status of a scan over this hashtable     */ \
-    HASHTABLE_DEBUG_MEMBERS
-
-typedef struct scanstatus *ScanStatus;
-
 #include "zsh.mdh"
 #include "hashtable.pro"
 
