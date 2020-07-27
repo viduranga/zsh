@@ -200,33 +200,37 @@ prompt_cleanup () {
 prompt () {
   local -a prompt_opts theme_active
 
-  zstyle -g theme_active :prompt-theme cleanup || {
-    # This is done here rather than in set_prompt so that it
-    # is safe and sane for set_prompt to setopt localoptions,
-    # which will be cleared before we arrive back here again.
-    # This is also why we pass around the prompt_opts array.
-    [[ -o promptbang ]] && prompt_opts+=(bang)
-    [[ -o promptcr ]] && prompt_opts+=(cr)
-    [[ -o promptpercent ]] && prompt_opts+=(percent)
-    [[ -o promptsp ]] && prompt_opts+=(sp)
-    [[ -o promptsubst ]] && prompt_opts+=(subst)
-    zstyle -e :prompt-theme cleanup \
-        'zstyle -d :prompt-theme cleanup;' \
-	'prompt_default_setup;' \
-        ${PS1+PS1="${(q)PS1}"} \
-        ${PS2+PS2="${(q)PS2}"} \
-        ${PS3+PS3="${(q)PS3}"} \
-        ${PS4+PS4="${(q)PS4}"} \
-        ${RPS1+RPS1="${(q)RPS1}"} \
-        ${RPS2+RPS2="${(q)RPS2}"} \
-        ${RPROMPT+RPROMPT="${(q)RPROMPT}"} \
-        ${RPROMPT2+RPROMPT2="${(q)RPROMPT2}"} \
-        ${PSVAR+PSVAR="${(q)PSVAR}"} \
-        "precmd_functions=(${(q)precmd_functions[@]})" \
-        "preexec_functions=(${(q)preexec_functions[@]})" \
-        "prompt_opts=( ${prompt_opts[*]} )" \
-        'reply=(yes)'
+  zstyle -g theme_active :prompt-theme cleanup && {
+    local -a reply
+    eval "$theme_active"
   }
+
+  # This is done here rather than in set_prompt so that it
+  # is safe and sane for set_prompt to setopt localoptions,
+  # which will be cleared before we arrive back here again.
+  # This is also why we pass around the prompt_opts array.
+  [[ -o promptbang ]] && prompt_opts+=(bang)
+  [[ -o promptcr ]] && prompt_opts+=(cr)
+  [[ -o promptpercent ]] && prompt_opts+=(percent)
+  [[ -o promptsp ]] && prompt_opts+=(sp)
+  [[ -o promptsubst ]] && prompt_opts+=(subst)
+  zstyle -e :prompt-theme cleanup \
+      'zstyle -d :prompt-theme cleanup;' \
+      'prompt_default_setup;' \
+      ${PS1+PS1="${(q)PS1}"} \
+      ${PS2+PS2="${(q)PS2}"} \
+      ${PS3+PS3="${(q)PS3}"} \
+      ${PS4+PS4="${(q)PS4}"} \
+      ${RPS1+RPS1="${(q)RPS1}"} \
+      ${RPS2+RPS2="${(q)RPS2}"} \
+      ${RPROMPT+RPROMPT="${(q)RPROMPT}"} \
+      ${RPROMPT2+RPROMPT2="${(q)RPROMPT2}"} \
+      ${PSVAR+PSVAR="${(q)PSVAR}"} \
+      "precmd_functions=(${(q)precmd_functions[@]})" \
+      "preexec_functions=(${(q)preexec_functions[@]})" \
+      "prompt_opts=( ${prompt_opts[*]} )" \
+      'reply=(yes)'
+
   set_prompt "$@"
 
   (( ${#prompt_opts} )) &&
