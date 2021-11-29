@@ -83,6 +83,11 @@ int done;
 /**/
 int mark;
 
+/* Zle needs to be refreshed */
+
+/**/
+static int zleneedsrefresh;
+
 /*
  * Status ($?) saved before function entry.  This is the
  * status we need to use in prompts.
@@ -1417,6 +1422,8 @@ execzlefunc(Thingy func, char **args, int set_bindk, int set_lbindk)
     Thingy save_bindk = bindk;
     Thingy save_lbindk = lbindk;
 
+    zleactive++;
+
     if (set_bindk)
 	bindk = func;
     if (zlemetaline) {
@@ -1584,6 +1591,11 @@ execzlefunc(Thingy func, char **args, int set_bindk, int set_lbindk)
     }
     if (isrepeat)
         viinrepeat = !invicmdmode();
+
+    if (--zleactive == 1 && zleneedsrefresh) {
+	zleneedsrefresh = 0;
+	zrefresh();
+		}
 
     return ret;
 }
@@ -2143,7 +2155,10 @@ zle_main_entry(int cmd, va_list ap)
 	break;
 
     case ZLE_CMD_REFRESH:
-	zrefresh();
+	if (zleactive > 1)
+	    zleneedsrefresh = 1;
+	else
+	    zrefresh();
 	break;
 
     case ZLE_CMD_SET_KEYMAP:

@@ -1184,8 +1184,7 @@ zrefresh(void)
 	if (winchanged) {
 	    moveto(0, 0);
 	    t0 = olnct;		/* this is to clear extra lines even when */
-	    winchanged = 0;	/* the terminal cannot TCCLEAREOD	  */
-	    listshown = 0;
+	    listshown = 0;	/* the terminal cannot TCCLEAREOD	  */
 	}
 #endif
 	/* we probably should only have explicitly set attributes */
@@ -1193,9 +1192,10 @@ zrefresh(void)
 	tsetcap(TCSTANDOUTEND, 0);
 	tsetcap(TCUNDERLINEEND, 0);
 	txtattrmask = 0;
-
-	if (trashedzle && !clearflag)
-	    reexpandprompt(); 
+	if ((trashedzle && !clearflag) || winchanged) {
+	    winchanged = 0;
+	    reexpandprompt();
+	}
 	resetvideo();
 	resetneeded = 0;	/* unset */
 	oput_rpmpt = 0;		/* no right-prompt currently on screen */
