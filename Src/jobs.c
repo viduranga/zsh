@@ -512,7 +512,7 @@ update_job(Job jn)
 		     * the user-visible superjob.
 		     */
 		    if (printjob(sjn, !!isset(LONGLISTJOBS), 0) &&
-			zleactive)
+			zleactive == 1)
 			zleentry(ZLE_CMD_REFRESH);
 		}
 	    }
@@ -620,7 +620,7 @@ update_job(Job jn)
     }
     if ((isset(NOTIFY) || job == thisjob) && (jn->stat & STAT_LOCKED)) {
 	if (printjob(jn, !!isset(LONGLISTJOBS), 0) &&
-	    zleactive)
+	    zleactive == 1)
 	    zleentry(ZLE_CMD_REFRESH);
     }
     if (sigtrapped[SIGCHLD] && job != thisjob)

@@ -1441,7 +1441,7 @@ dotrapargs(int sig, int *sigtr, void *sigfn)
      * If zle was running while the trap was executed, see if we
      * need to restore the display.
      */
-    if (zleactive && resetneeded)
+    if (zleactive == 1 && resetneeded)
 	zleentry(ZLE_CMD_REFRESH);
 
     if (*sigtr != ZSIG_IGNORED)

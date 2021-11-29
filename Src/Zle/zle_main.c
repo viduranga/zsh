@@ -1417,6 +1417,8 @@ execzlefunc(Thingy func, char **args, int set_bindk, int set_lbindk)
     Thingy save_bindk = bindk;
     Thingy save_lbindk = lbindk;
 
+    zleactive++;
+
     if (set_bindk)
 	bindk = func;
     if (zlemetaline) {
@@ -1584,6 +1586,8 @@ execzlefunc(Thingy func, char **args, int set_bindk, int set_lbindk)
     }
     if (isrepeat)
         viinrepeat = !invicmdmode();
+
+    --zleactive;
 
     return ret;
 }

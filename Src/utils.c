@@ -1850,12 +1850,10 @@ mod_export struct ttyinfo shttyinfo;
 /**/
 mod_export int resetneeded;
 
-#ifdef TIOCGWINSZ
 /* window size changed */
 
 /**/
 mod_export int winchanged;
-#endif
 
 static int
 adjustlines(int signalled)
@@ -1982,12 +1980,9 @@ adjustwinsize(int from)
 #endif /* TIOCGWINSZ */
 
     if (zleactive && resetzle) {
-#ifdef TIOCGWINSZ
-	winchanged =
-#endif /* TIOCGWINSZ */
-	    resetneeded = 1;
-	zleentry(ZLE_CMD_RESET_PROMPT);
-	zleentry(ZLE_CMD_REFRESH);
+	winchanged = resetneeded = 1;
+	if (zleactive == 1)
+	    zleentry(ZLE_CMD_REFRESH);
     }
 }
 
