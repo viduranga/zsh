@@ -40,7 +40,7 @@ _dnf_packages() {
   selected=$selected[2]
   if [[ $selected = upgradable ]]; then
     pkgs=( $(_dnf_helper upgrade) )
-  elif [[ -r $cache_file ]]; then
+  elif [[ -v commands[sqlite3] && -r $cache_file ]]; then
     local table=$selected
     # 'available' table contains both 'available' and 'installed' packages
     [[ $selected = all ]] && table=available
